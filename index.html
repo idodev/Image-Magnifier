@@ -7,7 +7,7 @@
 	
 	<style>
 		.idd-zoom {
-			width:600px;
+			width:990px;
 			margin:100px auto;
 		}
 		.idd-zoom img {
@@ -19,13 +19,15 @@
 <body>
 	<div class="idd-zoom">
 		<img src="http://www.whistlefish.com/images/products/wtt05-sea-swell-cornwall-map-tea-towel-flat.jpg"/>
-		<div class="idd-zoom-fade"></div>
-		<div class="idd-zoom-mag"></div>
 	</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.js"></script>
 	<script src="idd-zoom.js"></script>
 	<script>
-
+		var mp = new magpic('.idd-zoom', {
+			magnifierSize:250,
+			fadeDuration: 400,
+			initialPosition: [250,300]
+		});
 	</script>
 </body>
 </html>
