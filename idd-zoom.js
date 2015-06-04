@@ -1,13 +1,13 @@
 var magpic = function(selector, options ) {
 	var _this = this;
-	_this.el = $(selector);
-	_this.imgSrc = $('img', _this.el).attr('src');
-
+	
 	/*----------------------------------*/
 	/* Set instance settings			*/
 	/*----------------------------------*/
 	var defaults = {
+		magnifierImage: false,
 		magnifierSize: 200,
+		magnifierBgColor: '#FFF',
 		fadeDuration: 200,
 		enabled: true,
 		initialPosition: false
@@ -15,6 +15,10 @@ var magpic = function(selector, options ) {
 	options = options || {};
 	_this.settings = $.extend( {}, defaults, options );
 	
+
+	_this.el = $(selector);
+	_this.imgSrc = _this.settings.magnifierImage || $('img', _this.el).attr('src');
+
 
 	/*----------------------------------*/
 	/* Store Image Size 				*/
@@ -25,6 +29,7 @@ var magpic = function(selector, options ) {
 		_this.imgSize.width = this.width;
 		_this.imgSize.height = this.height;
 
+		// if there is an initial position set then show magnifier (only works after load of)
 		if(_this.settings.initialPosition!=false) 
 			_this.moveTo(_this.settings.initialPosition[0], _this.settings.initialPosition[1]);
 	}
@@ -43,6 +48,7 @@ var magpic = function(selector, options ) {
 		.css('height', _this.settings.magnifierSize + 'px')
 		.css('margin-top', -(_this.settings.magnifierSize/2) + 'px')
 		.css('margin-left', -(_this.settings.magnifierSize/2) + 'px')
+		.css('background-color', _this.settings.magnifierBgColor);
 
 	// magnifier image (appended to mag div)
 	_this.magImgEl = $('<img>').attr('src',_this.imgSrc);
@@ -76,11 +82,11 @@ var magpic = function(selector, options ) {
 	/* Enable listener for mouse move	*/
 	/*----------------------------------*/
 	_this.el.on('mousemove', function(e) {
-		// if the image size is not yet initialised, don't proceed
-		if(_this.imgSize.width == null) return;
-		
 		var offset, mousePositionInImage;
 
+		// if the image size is not yet initialised, don't proceed
+		if(_this.imgSize.width == null || _this.settings.enabled == false) return;
+		
 		// update offset
 		offset = $(this).offset();
 		mousePositionInImage = {
@@ -106,21 +112,30 @@ var magpic = function(selector, options ) {
 
 	});
 
-	_this.moveTo = function(x, y) {
+	_this.el.on('click', function(){
+		_this.settings.enabled = !_this.settings.enabled;
+		_this.toggleVisibility(_this.settings.enabled);
+	});
+
+	_this.moveTo = function(x, y, duration) {
+		if(duration == undefined) duration = 0;
 		var magnifierImageOffset = {
 			'x': -((( x / _this.el.width() ) * _this.imgSize.width ) - ( _this.settings.magnifierSize / 2 )),
 			'y': -((( y / _this.el.height() ) * _this.imgSize.height ) - ( _this.settings.magnifierSize / 2 ))
 		}
 
 		//set position of magnifier over image
-		_this.magEl
-			.css('left', x)
-			.css('top', y);
+		_this.magEl.finish().animate({
+			'left': x,
+			'top': y
+		},duration);
 
 		// set margin offset of image within magnifier
-		_this.magImgEl
-			.css('left',  magnifierImageOffset.x)
-			.css('top', magnifierImageOffset.y);
+		var borderWidth = parseInt(_this.magEl.css("border-left-width"));
+		_this.magImgEl.finish().animate({
+			'left': magnifierImageOffset.x - borderWidth,
+			'top': magnifierImageOffset.y - borderWidth
+		},duration);
 
 		// if not already displayed, fade in magnifier
 		if(!_this.isVisible) _this.toggleVisibility(true);

@@ -3,6 +3,7 @@
 	position:relative;
 	overflow:visible;
 	z-index:1;
+	font-size:0;
 }
 
 .idd-zoom-fade
@@ -20,19 +21,18 @@
 
 .idd-zoom-mag
 {
+	
 	display: none;
+	box-sizing:border-box;
 	position:absolute;
-	margin-top:-104px;
-	margin-left:-104px;
-	width:200px;
-	height:200px;
-	border-radius: 50%;
 	overflow:hidden;
+	cursor:none;
+	border-radius: 50%;
 	background-repeat: no-repeat;
 	border:4px solid #FFF;
-	cursor:none;
 	box-shadow: 0 0 10px #000;
 	z-index:100;
+	
 }
 .idd-zoom-mag img
 {
